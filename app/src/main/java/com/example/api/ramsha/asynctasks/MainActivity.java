@@ -15,20 +15,32 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    Button btn;
+    Button btn, cancel;
     int i = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final MyAsyncTasks[] obj = new MyAsyncTasks[1];
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         btn = findViewById(R.id.button);
+        cancel = findViewById(R.id.button2);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String querry = "hi";
-                new MyAsyncTasks().execute(querry);
+                obj[0] = new MyAsyncTasks();
+                obj[0].execute(querry);
+
+            }
+        });
+        //kill background thread/async task
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                obj[0].cancel(true);
             }
         });
     }
@@ -49,12 +61,20 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     //the below line calls the above postDelayed after every 2 seconds
                     //to destroy this we destroy handler
-                    //handlerObject.postDelayed(this,2000);
+
+                    handlerObject.postDelayed(this,2000);
                     //Log.d(TAG, "run: "+ 1);
-                    onProgressUpdate(2);
-                    Toast.makeText(MainActivity.this, "This toast was delayed for 2 seconds", Toast.LENGTH_SHORT).show();
+                    if (!isCancelled()) {
+                        onProgressUpdate(2);
+                        Toast.makeText(MainActivity.this, "This toast was delayed for 2 seconds", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        //handlerObject.removeCallbacks(this);
+
+                    }
                 }
-            },2000 );
+            }, 2000);
+
             Log.d(TAG, "doInBackground: " + strings[0]);
 
             return value;
