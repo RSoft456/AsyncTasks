@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,14 +26,7 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Handler handlerObject = new Handler();
-                //time here is in miliseconds 1sec = 1000ms
-                handlerObject.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "This toast was delayed for 2 seconds", Toast.LENGTH_SHORT).show();
-                    }
-                },2000 );
+
                 String querry = "hi";
                 new MyAsyncTasks().execute(querry);
             }
@@ -46,7 +40,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             String value = strings[0];
-
+            Handler handlerObject = new Handler(Looper.getMainLooper());
+            //time here is in miliseconds 1sec = 1000ms
+            handlerObject.postDelayed(new Runnable() {
+                //handler is just like a thread, we can delay tasks with it,
+                @Override
+                public void run() {
+                    //the below line calls the above postDelayed after every 2 seconds
+                    //to destroy this we destroy handler
+                    handlerObject.postDelayed(this,2000);
+                    Log.d(TAG, "run: "+ 1);
+                    Toast.makeText(MainActivity.this, "This toast was delayed for 2 seconds", Toast.LENGTH_SHORT).show();
+                }
+            },2000 );
             Log.d(TAG, "doInBackground: " + strings[0]);
 
             return value;
@@ -58,5 +64,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "s", Toast.LENGTH_SHORT).show();
             super.onPostExecute(s);
         }
+        
     }
 }
