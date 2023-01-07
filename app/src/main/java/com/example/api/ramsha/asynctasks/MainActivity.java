@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    class MyAsyncTasks extends AsyncTask<String, Void, String> {
+    class MyAsyncTasks extends AsyncTask<String, Integer, String> {
         int i = 1;
 
         @Override
@@ -42,14 +42,16 @@ public class MainActivity extends AppCompatActivity {
             String value = strings[0];
             Handler handlerObject = new Handler(Looper.getMainLooper());
             //time here is in miliseconds 1sec = 1000ms
+
             handlerObject.postDelayed(new Runnable() {
                 //handler is just like a thread, we can delay tasks with it,
                 @Override
                 public void run() {
                     //the below line calls the above postDelayed after every 2 seconds
                     //to destroy this we destroy handler
-                    handlerObject.postDelayed(this,2000);
-                    Log.d(TAG, "run: "+ 1);
+                    //handlerObject.postDelayed(this,2000);
+                    //Log.d(TAG, "run: "+ 1);
+                    onProgressUpdate(2);
                     Toast.makeText(MainActivity.this, "This toast was delayed for 2 seconds", Toast.LENGTH_SHORT).show();
                 }
             },2000 );
@@ -64,6 +66,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "s", Toast.LENGTH_SHORT).show();
             super.onPostExecute(s);
         }
-        
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Log.d(TAG, "onProgressUpdate: " + values[0]);
+            super.onProgressUpdate(values);
+        }
     }
 }
